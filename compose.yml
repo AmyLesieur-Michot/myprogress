@@ -1,0 +1,10 @@
+version: '3'
+services:
+  db:
+    image: postgres:alpine
+    container_name: database_myprogress
+    environment:
+      - POSTGRES_PASSWORD=dinde
+      - POSTGRES_DB=myprogress
+    ports:
+      - 5432:5432
