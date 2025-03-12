@@ -133,21 +133,6 @@ export async function deleteUser(req: Request, res: Response) {
 
     res.sendStatus(200);
 }
-/*// Creation of the function deleteUser that delete an user.
-export async function deleteUser(req: Request, res: Response) {
-    const user = await User.findOne({
-        where: { id: Number(req.params.id) }
-    });
-
-    if (!user) {
-        res.sendStatus(404);
-        return;
-    } 
-
-    await user.remove();
-
-    res.sendStatus(200);
-}*/
 
 
 
