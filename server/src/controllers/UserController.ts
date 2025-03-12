@@ -8,6 +8,11 @@ res.send(await User.find());
 }
 
 // Creation of the function createUser that create an user.
+export function isUserRole(role: any): role is UserRole {
+    if (!role) return false; 
+    return Object.values(UserRole).includes(role); 
+}
+
 export async function createUser(req: Request, res: Response) {
 if (typeof req.body.first_name !== 'string') {
     res.status(400).send('Missing "first_name" field');
@@ -28,22 +33,17 @@ if (typeof req.body.password !== 'string') {
 
 const { first_name, last_name, email, password, role } = req.body;
 
-let userRole: UserRole = UserRole.STUDENT;
-if (role) {
-    if (!Object.values(UserRole).includes(role)) {
-        res.status(400).send('Invalid "role" field');
-        return;
-    }
-    userRole = role;
-}
-
 const user = new User();
 
 user.first_name = first_name;
 user.last_name = last_name;
 user.email = email;
 user.password = await bcrypt.hash(password, 12);
-user.role = userRole;
+if (!isUserRole(role)) {
+    res.status(400).send('Invalid "role" field');
+    return;
+}
+user.role = role;
 
 await user.save();
 
@@ -96,9 +96,9 @@ user.first_name = req.body.first_name;
 user.last_name = req.body.last_name;
 user.email = req.body.email;
 user.password = await bcrypt.hash(req.body.password, 12);
-if (!Object.values(UserRole).includes(req.body.role)) {
-res.status(400).json({ message: 'Invalid "role" field' });
-return;
+if (!isUserRole(req.body.role)) {
+    res.status(400).send('Invalid "role" field');
+    return;
 }
 user.role = req.body.role;
 
@@ -106,7 +106,6 @@ await user.save();
 
 res.sendStatus(200);
 }
-
 
 // Creation of the function deleteUser that delete an user.
 export async function deleteUser(req: Request, res: Response) {
